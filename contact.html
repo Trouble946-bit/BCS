@@ -116,72 +116,10 @@
         issues and receive an instant reference number for follow-up.
       </p>
       <div class="ticketing-layout">
-        <form class="ticket-form" id="ticketForm" novalidate>
-          <div class="form-grid">
-            <label>
-              Full Name
-              <input type="text" name="requester" required />
-            </label>
-            <label>
-              Organization
-              <input type="text" name="organization" required />
-            </label>
-            <label>
-              Email Address
-              <input type="email" name="email" required />
-            </label>
-            <label>
-              Priority
-              <select name="priority" required>
-                <option value="">Select priority</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-                <option value="Critical">Critical</option>
-              </select>
-            </label>
-            <label>
-              Category
-              <select name="category" required>
-                <option value="">Select category</option>
-                <option value="Network">Network</option>
-                <option value="Hardware">Hardware</option>
-                <option value="Software">Software</option>
-                <option value="Security">Security</option>
-                <option value="Access">Access</option>
-              </select>
-            </label>
-          </div>
-          <label>
-            Issue Description
-            <textarea name="issue" rows="4" required placeholder="Describe the issue, impact, and location."></textarea>
-          </label>
-          <button class="btn btn-primary" type="submit">Create Ticket</button>
-          <p class="form-feedback" id="ticketFeedback" aria-live="polite"></p>
-        </form>
-
-        <aside class="ticket-board" aria-label="Submitted contact issue reports">
-          <div class="ticket-board-head">
-            <h3>Issue Reports</h3>
-            <button class="btn btn-secondary" id="clearTickets" type="button">Clear Reports</button>
-          </div>
-          <form class="ticket-tracker" id="trackTicketForm" novalidate>
-            <label for="ticketReferenceInput">Track Your Query by Reference Number</label>
-            <div class="ticket-tracker-row">
-              <input
-                id="ticketReferenceInput"
-                name="ticketReference"
-                type="text"
-                placeholder="Example: BCS-20260701-0001"
-                autocomplete="off"
-              />
-              <button class="btn btn-secondary" type="submit">Track Query</button>
-            </div>
-            <p class="form-feedback" id="ticketTrackerFeedback" aria-live="polite"></p>
-          </form>
-          <p class="ticket-empty" id="ticketEmpty">No issue reports submitted yet.</p>
-          <div class="ticket-list" id="ticketList" aria-live="polite"></div>
-        </aside>
+        <!-- Ticket UI moved to modal and FAB; leave link to open modal -->
+        <p>
+          Use the <strong>Create Ticket</strong> button at the bottom-right to open the ticket form.
+        </p>
       </div>
     </section>
   </main>
