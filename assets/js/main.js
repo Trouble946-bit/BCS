@@ -316,13 +316,56 @@ const ticketModalClose = document.getElementById("ticketModalClose");
 const ticketModalForm = document.getElementById("ticketModalForm");
 const ticketModalFeedback = document.getElementById("ticketModalFeedback");
 
+let _lastFocusedEl = null;
+
+const getFocusableElements = (container) => {
+  if (!container) return [];
+  return Array.from(
+    container.querySelectorAll(
+      'a[href], area[href], input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    )
+  ).filter((el) => el.offsetParent !== null);
+};
+
+const handleModalKeyDown = (e) => {
+  if (!ticketModal || ticketModal.hidden) return;
+  if (e.key === "Escape") {
+    e.preventDefault();
+    closeTicketModal();
+    return;
+  }
+
+  if (e.key === "Tab") {
+    const focusable = getFocusableElements(ticketModal);
+    if (!focusable.length) {
+      e.preventDefault();
+      return;
+    }
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    if (e.shiftKey) {
+      if (document.activeElement === first || document.activeElement === ticketModal) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  }
+};
+
 const openTicketModal = () => {
   if (!ticketModal) return;
+  _lastFocusedEl = document.activeElement;
   ticketModal.hidden = false;
   ticketModal.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
-  const firstInput = ticketModal.querySelector("input, textarea, select");
-  if (firstInput) firstInput.focus();
+  document.addEventListener("keydown", handleModalKeyDown);
+  const focusable = getFocusableElements(ticketModal);
+  if (focusable.length) focusable[0].focus();
 };
 
 const closeTicketModal = () => {
@@ -330,8 +373,14 @@ const closeTicketModal = () => {
   ticketModal.hidden = true;
   ticketModal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
+  document.removeEventListener("keydown", handleModalKeyDown);
   if (ticketModalForm) ticketModalForm.reset();
   if (ticketModalFeedback) ticketModalFeedback.textContent = "";
+  try {
+    if (_lastFocusedEl && typeof _lastFocusedEl.focus === "function") _lastFocusedEl.focus();
+  } catch (err) {
+    /* ignore */
+  }
 };
 
 if (createTicketFab) {
