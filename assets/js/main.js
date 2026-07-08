@@ -439,3 +439,157 @@ if (ticketModalForm) {
     setTimeout(() => closeTicketModal(), 900);
   });
 }
+
+// Ticket search / track modal (find by reference, view details, add updates)
+const trackTicketFab = document.getElementById("trackTicketFab");
+const ticketSearchModal = document.getElementById("ticketSearchModal");
+const ticketSearchForm = document.getElementById("ticketSearchForm");
+const ticketSearchInput = document.getElementById("ticketSearchInput");
+const ticketSearchClear = document.getElementById("ticketSearchClear");
+const ticketSearchResult = document.getElementById("ticketSearchResult");
+const resultRef = document.getElementById("resultRef");
+const resultStatus = document.getElementById("resultStatus");
+const resultRequester = document.getElementById("resultRequester");
+const resultCategory = document.getElementById("resultCategory");
+const resultPriority = document.getElementById("resultPriority");
+const resultCreated = document.getElementById("resultCreated");
+const resultIssueText = document.getElementById("resultIssueText");
+const resultUpdatesList = document.getElementById("resultUpdatesList");
+const addUpdateSection = document.getElementById("addUpdateSection");
+const addUpdateForm = document.getElementById("addUpdateForm");
+const addUpdateText = document.getElementById("addUpdateText");
+const closeSearchResult = document.getElementById("closeSearchResult");
+const toggleStatusBtn = document.getElementById("toggleStatusBtn");
+
+let _lastFocusedSearchEl = null;
+
+const openTicketSearchModal = () => {
+  if (!ticketSearchModal) return;
+  _lastFocusedSearchEl = document.activeElement;
+  ticketSearchModal.hidden = false;
+  ticketSearchModal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  const first = ticketSearchModal.querySelector("input, button, textarea, select");
+  if (first) first.focus();
+};
+
+const closeTicketSearchModal = () => {
+  if (!ticketSearchModal) return;
+  ticketSearchModal.hidden = true;
+  ticketSearchModal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  if (_lastFocusedSearchEl && typeof _lastFocusedSearchEl.focus === "function") _lastFocusedSearchEl.focus();
+  // reset UI
+  if (ticketSearchForm) ticketSearchForm.reset();
+  if (ticketSearchResult) ticketSearchResult.hidden = true;
+  if (addUpdateSection) addUpdateSection.hidden = true;
+  if (resultUpdatesList) resultUpdatesList.innerHTML = "";
+};
+
+const renderTicketDetails = (ticket) => {
+  if (!ticket) return;
+  if (resultRef) resultRef.textContent = getTicketReference(ticket);
+  if (resultStatus) resultStatus.textContent = ticket.status;
+  if (resultRequester) resultRequester.textContent = ticket.requester || "-";
+  if (resultCategory) resultCategory.textContent = ticket.category || "-";
+  if (resultPriority) resultPriority.textContent = ticket.priority || "-";
+  if (resultCreated) resultCreated.textContent = new Date(ticket.createdAt).toLocaleString();
+  if (resultIssueText) resultIssueText.textContent = ticket.issue || "-";
+
+  // render updates
+  if (resultUpdatesList) {
+    resultUpdatesList.innerHTML = "";
+    const updates = Array.isArray(ticket.updates) ? ticket.updates : [];
+    if (!updates.length) {
+      resultUpdatesList.innerHTML = "<li>No updates yet</li>";
+    } else {
+      updates.forEach((u) => {
+        const li = document.createElement("li");
+        li.textContent = `${new Date(u.createdAt).toLocaleString()}: ${u.text}`;
+        resultUpdatesList.append(li);
+      });
+    }
+  }
+
+  if (addUpdateSection) addUpdateSection.hidden = ticket.status === "Resolved";
+  if (ticketSearchResult) ticketSearchResult.hidden = false;
+};
+
+const findTicketByRef = (ref) => {
+  const tickets = loadTickets();
+  const q = normalizeReference(ref);
+  return tickets.find((t) => getTicketReference(t) === q);
+};
+
+if (trackTicketFab) trackTicketFab.addEventListener("click", openTicketSearchModal);
+
+if (ticketSearchModal) {
+  ticketSearchModal.addEventListener("click", (e) => {
+    if (e.target && e.target.dataset && e.target.dataset.action === "close") {
+      closeTicketSearchModal();
+    }
+    if (e.target && e.target.classList && e.target.classList.contains("ticket-modal-close")) {
+      closeTicketSearchModal();
+    }
+  });
+}
+
+if (ticketSearchForm) {
+  ticketSearchForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const ref = ticketSearchInput ? ticketSearchInput.value : "";
+    if (!ref) return;
+    const found = findTicketByRef(ref);
+    if (!found) {
+      if (ticketSearchResult) {
+        ticketSearchResult.hidden = false;
+        if (resultRef) resultRef.textContent = "Not found";
+        if (resultIssueText) resultIssueText.textContent = `No ticket found for ${ref}`;
+        if (resultStatus) resultStatus.textContent = "-";
+      }
+      return;
+    }
+    renderTicketDetails(found);
+  });
+}
+
+if (ticketSearchClear) {
+  ticketSearchClear.addEventListener("click", () => {
+    if (ticketSearchForm) ticketSearchForm.reset();
+    if (ticketSearchResult) ticketSearchResult.hidden = true;
+  });
+}
+
+if (addUpdateForm) {
+  addUpdateForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const ref = ticketSearchInput ? ticketSearchInput.value : "";
+    if (!ref) return;
+    const tickets = loadTickets();
+    const idx = tickets.findIndex((t) => getTicketReference(t) === normalizeReference(ref));
+    if (idx === -1) return;
+    const text = addUpdateText ? String(addUpdateText.value || "").trim() : "";
+    if (!text) return;
+    const update = { text, createdAt: new Date().toISOString() };
+    tickets[idx].updates = Array.isArray(tickets[idx].updates) ? tickets[idx].updates : [];
+    tickets[idx].updates.push(update);
+    saveTickets(tickets);
+    renderTicketDetails(tickets[idx]);
+    if (typeof renderTickets === "function") renderTickets(tickets);
+    addUpdateForm.reset();
+  });
+}
+
+if (toggleStatusBtn) {
+  toggleStatusBtn.addEventListener("click", () => {
+    const ref = ticketSearchInput ? ticketSearchInput.value : "";
+    if (!ref) return;
+    const tickets = loadTickets();
+    const idx = tickets.findIndex((t) => getTicketReference(t) === normalizeReference(ref));
+    if (idx === -1) return;
+    tickets[idx].status = tickets[idx].status === "Resolved" ? "Open" : "Resolved";
+    saveTickets(tickets);
+    renderTicketDetails(tickets[idx]);
+    if (typeof renderTickets === "function") renderTickets(tickets);
+  });
+}

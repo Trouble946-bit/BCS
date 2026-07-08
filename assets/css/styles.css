@@ -1087,6 +1087,29 @@ main {
   z-index: 90;
 }
 
+.track-ticket-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 132px; /* above create ticket */
+  background: #4aa96c;
+  color: #fff;
+  padding: 0.5rem 0.8rem;
+  border-radius: 999px;
+  box-shadow: 0 10px 26px rgba(12, 80, 140, 0.18);
+  border: 0;
+  font-weight: 700;
+  z-index: 90;
+}
+
+.ticket-search-result p {
+  margin: 0.3rem 0;
+}
+
+#resultUpdatesList {
+  margin: 0.4rem 0 0 0;
+  padding-left: 1.1rem;
+}
+
 .ticket-modal {
   position: fixed;
   inset: 0;

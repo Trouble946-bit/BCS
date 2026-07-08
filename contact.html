@@ -133,6 +133,7 @@
 
   <a class="whatsapp-fab" href="https://wa.me/265999744990" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">WhatsApp</a>
   <button type="button" class="create-ticket-fab" id="createTicketFab" aria-haspopup="dialog" aria-controls="ticketModal">Create Ticket</button>
+  <button type="button" class="track-ticket-fab" id="trackTicketFab" aria-haspopup="dialog" aria-controls="ticketSearchModal">Track Ticket</button>
 
   <div id="ticketModal" class="ticket-modal" role="dialog" aria-modal="true" aria-hidden="true" hidden>
     <div class="ticket-modal-backdrop" data-action="close"></div>
@@ -183,6 +184,53 @@
         <button class="btn btn-primary" type="submit">Create Ticket</button>
         <p class="form-feedback" id="ticketModalFeedback" aria-live="polite"></p>
       </form>
+    </div>
+  </div>
+
+  <div id="ticketSearchModal" class="ticket-modal" role="dialog" aria-modal="true" aria-hidden="true" hidden>
+    <div class="ticket-modal-backdrop" data-action="close"></div>
+    <div class="ticket-modal-dialog" role="document">
+      <button type="button" class="ticket-modal-close" data-action="close" aria-label="Close search">×</button>
+      <h2>Track Ticket</h2>
+      <p class="modal-instructions">Enter your ticket reference to view details and add updates.</p>
+      <form id="ticketSearchForm" class="ticket-search-form">
+        <label>
+          Reference
+          <input id="ticketSearchInput" name="reference" type="text" placeholder="BCS-20260701-0001" />
+        </label>
+        <div style="display:flex;gap:0.6rem;margin-top:0.6rem;">
+          <button class="btn btn-secondary" type="submit">Search</button>
+          <button class="btn" type="button" id="ticketSearchClear">Clear</button>
+        </div>
+      </form>
+
+      <div id="ticketSearchResult" class="ticket-search-result" hidden>
+        <h3 id="resultRef"></h3>
+        <p><strong>Status:</strong> <span id="resultStatus"></span></p>
+        <p><strong>Requester:</strong> <span id="resultRequester"></span></p>
+        <p><strong>Category:</strong> <span id="resultCategory"></span></p>
+        <p><strong>Priority:</strong> <span id="resultPriority"></span></p>
+        <p><strong>Created:</strong> <span id="resultCreated"></span></p>
+        <div id="resultIssue"><h4>Issue</h4><p id="resultIssueText"></p></div>
+        <div id="resultUpdates"><h4>Updates</h4><ul id="resultUpdatesList"></ul></div>
+
+        <div id="addUpdateSection" hidden>
+          <h4>Add Update</h4>
+          <form id="addUpdateForm">
+            <label>
+              Update
+              <textarea id="addUpdateText" name="update" rows="3" required></textarea>
+            </label>
+            <div style="display:flex;gap:0.6rem;margin-top:0.6rem;">
+              <button class="btn btn-primary" type="submit">Add Update</button>
+              <button class="btn" type="button" id="closeSearchResult">Close</button>
+            </div>
+          </form>
+        </div>
+        <div style="margin-top:0.8rem;">
+          <button class="btn btn-secondary" id="toggleStatusBtn" type="button">Toggle Resolved</button>
+        </div>
+      </div>
     </div>
   </div>
   <script src="assets/js/main.js"></script>
