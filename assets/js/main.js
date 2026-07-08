@@ -18,6 +18,11 @@ if (window.location.hash === "#ticketing") {
   }
 }
 
+// Ensure modal is hidden by default on load
+if (ticketModal) {
+  ticketModal.hidden = true;
+}
+
 if (yearNode) {
   yearNode.textContent = new Date().getFullYear();
 }
@@ -171,6 +176,15 @@ if (ticketModal && ticketModalClose) {
   // Close on outside click
   ticketModal.addEventListener('click', (e) => {
     if (e.target === ticketModal) closeTicketModal();
+  });
+
+  // Delegate any .modal-close clicks (in case markup changes)
+  document.addEventListener('click', (e) => {
+    const target = e.target;
+    if (!(target instanceof HTMLElement)) return;
+    if (target.matches('.modal-close') || target.closest('.modal-close')) {
+      if (!ticketModal.hidden) closeTicketModal();
+    }
   });
 
   // Close on Escape and trap focus
