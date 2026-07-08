@@ -1070,6 +1070,72 @@ main {
   border-radius: 999px;
   padding: 0.72rem 1rem;
   font-weight: 700;
+
+.create-ticket-fab {
+  position: fixed;
+  right: 18px;
+  bottom: 76px; /* above whatsapp */
+  background: var(--brand);
+  color: #fff;
+  padding: 0.6rem 0.9rem;
+  border-radius: 999px;
+  box-shadow: 0 10px 26px rgba(12, 80, 140, 0.28);
+  border: 0;
+  font-weight: 700;
+  z-index: 90;
+}
+
+.ticket-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  z-index: 1000;
+}
+
+.ticket-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(2, 6, 10, 0.6);
+}
+
+.ticket-modal-dialog {
+  position: relative;
+  background: var(--surface);
+  border-radius: 12px;
+  padding: 1.1rem;
+  width: min(640px, 94%);
+  max-height: 90vh;
+  overflow: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
+  z-index: 1010;
+}
+
+.ticket-modal-close {
+  position: absolute;
+  right: 12px;
+  top: 10px;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-size: 1.4rem;
+}
+
+.ticket-modal .form-grid {
+  display: grid;
+  gap: 0.6rem;
+  grid-template-columns: 1fr 1fr;
+}
+
+.ticket-modal .form-grid label {
+  display: flex;
+  flex-direction: column;
+}
+
+.ticket-modal .modal-instructions {
+  color: var(--muted);
+  margin-top: 0;
+}
   box-shadow: 0 10px 20px rgba(20, 89, 53, 0.3);
 }
 

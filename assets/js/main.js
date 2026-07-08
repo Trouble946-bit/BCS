@@ -308,3 +308,85 @@ if (ticketForm && ticketList && ticketEmpty && clearTicketsButton) {
     }
   });
 }
+
+// Floating FAB and modal handling (Create Ticket)
+const createTicketFab = document.getElementById("createTicketFab");
+const ticketModal = document.getElementById("ticketModal");
+const ticketModalClose = document.getElementById("ticketModalClose");
+const ticketModalForm = document.getElementById("ticketModalForm");
+const ticketModalFeedback = document.getElementById("ticketModalFeedback");
+
+const openTicketModal = () => {
+  if (!ticketModal) return;
+  ticketModal.hidden = false;
+  ticketModal.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+  const firstInput = ticketModal.querySelector("input, textarea, select");
+  if (firstInput) firstInput.focus();
+};
+
+const closeTicketModal = () => {
+  if (!ticketModal) return;
+  ticketModal.hidden = true;
+  ticketModal.setAttribute("aria-hidden", "true");
+  document.body.style.overflow = "";
+  if (ticketModalForm) ticketModalForm.reset();
+  if (ticketModalFeedback) ticketModalFeedback.textContent = "";
+};
+
+if (createTicketFab) {
+  createTicketFab.addEventListener("click", openTicketModal);
+}
+
+if (ticketModalClose) {
+  ticketModalClose.addEventListener("click", closeTicketModal);
+}
+
+if (ticketModal) {
+  ticketModal.addEventListener("click", (e) => {
+    if (e.target && e.target.dataset && e.target.dataset.action === "close") {
+      closeTicketModal();
+    }
+  });
+}
+
+if (ticketModalForm) {
+  ticketModalForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    if (!ticketModalForm.checkValidity()) {
+      ticketModalForm.reportValidity();
+      if (ticketModalFeedback) ticketModalFeedback.textContent = "Please complete all required fields.";
+      return;
+    }
+
+    // Reuse existing ticket storage logic
+    const tickets = loadTickets();
+    const formData = new FormData(ticketModalForm);
+    const reference = generateTicketReference(tickets);
+
+    const ticket = {
+      id: reference,
+      reference,
+      requester: String(formData.get("requester") || "").trim(),
+      organization: String(formData.get("organization") || "").trim(),
+      email: String(formData.get("email") || "").trim(),
+      priority: String(formData.get("priority") || ""),
+      category: String(formData.get("category") || ""),
+      issue: String(formData.get("issue") || "").trim(),
+      status: "Open",
+      createdAt: new Date().toISOString(),
+    };
+
+    const all = [ticket, ...tickets];
+    saveTickets(all);
+
+    if (ticketModalFeedback) ticketModalFeedback.textContent = `Issue submitted successfully. Your reference number is ${reference}.`;
+
+    // Update any visible ticket board (if present)
+    if (typeof renderTickets === "function") {
+      renderTickets(all);
+    }
+
+    setTimeout(() => closeTicketModal(), 900);
+  });
+}
