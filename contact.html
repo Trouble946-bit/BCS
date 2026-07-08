@@ -111,6 +111,18 @@
     <section class="section reveal" id="ticketing">
       <p class="eyebrow">Contact Us</p>
       <h2>Contact Us and Report an Issue</h2>
+      <form id="trackTicketForm" class="track-inline-form" novalidate style="margin-bottom:1rem;">
+        <label style="display:block;">
+          Track a ticket
+          <input id="ticketReferenceInput" name="reference" type="text" placeholder="Enter reference e.g. BCS-20260701-0001" style="width:100%;margin-top:0.4rem;" />
+        </label>
+        <div style="display:flex;gap:0.6rem;margin-top:0.6rem;">
+          <button class="btn btn-secondary" type="submit">Track Ticket</button>
+          <button class="btn" type="button" id="ticketReferenceClear">Clear</button>
+        </div>
+        <p class="form-feedback" id="ticketTrackerFeedback" aria-live="polite"></p>
+      </form>
+
       <p>
         Reach out to BCS Malawi directly from this page. You can report incidents, service requests, or technical
         issues and receive an instant reference number for follow-up.
@@ -133,7 +145,6 @@
 
   <a class="whatsapp-fab" href="https://wa.me/265999744990" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">WhatsApp</a>
   <button type="button" class="create-ticket-fab" id="createTicketFab" aria-haspopup="dialog" aria-controls="ticketModal">Create Ticket</button>
-  <button type="button" class="track-ticket-fab" id="trackTicketFab" aria-haspopup="dialog" aria-controls="ticketSearchModal">Track Ticket</button>
 
   <div id="ticketModal" class="ticket-modal" role="dialog" aria-modal="true" aria-hidden="true" hidden>
     <div class="ticket-modal-backdrop" data-action="close"></div>

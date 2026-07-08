@@ -623,6 +623,36 @@ if (ticketSearchForm) {
   });
 }
 
+// Inline track form (above Contact) should open the same search result modal
+if (trackTicketForm) {
+  trackTicketForm.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const ref = ticketReferenceInput ? String(ticketReferenceInput.value || "").trim() : "";
+    if (!ref) {
+      if (ticketTrackerFeedback) ticketTrackerFeedback.textContent = "Enter a reference number to track your query.";
+      return;
+    }
+    const found = findTicketByRef(ref);
+    if (!found) {
+      if (ticketTrackerFeedback) ticketTrackerFeedback.textContent = `No issue found for reference ${ref}.`;
+      return;
+    }
+    // populate the modal search input and open the modal with details
+    if (ticketSearchInput) ticketSearchInput.value = normalizeReference(ref);
+    renderTicketDetails(found);
+    openTicketSearchModal();
+    if (ticketTrackerFeedback) ticketTrackerFeedback.textContent = `Reference ${normalizeReference(ref)} found.`;
+  });
+}
+
+const ticketReferenceClearBtn = document.getElementById("ticketReferenceClear");
+if (ticketReferenceClearBtn) {
+  ticketReferenceClearBtn.addEventListener("click", () => {
+    if (ticketReferenceInput) ticketReferenceInput.value = "";
+    if (ticketTrackerFeedback) ticketTrackerFeedback.textContent = "";
+  });
+}
+
 if (ticketSearchClear) {
   ticketSearchClear.addEventListener("click", () => {
     if (ticketSearchForm) ticketSearchForm.reset();
