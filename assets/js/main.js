@@ -143,27 +143,65 @@ if (ticketForm) {
   });
 }
 
-// Modal controls
+// Modal controls with basic focus trap
 if (ticketModal && ticketModalClose) {
-  ticketModalClose.addEventListener("click", () => {
+  const focusableSelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+  function openTicketModal() {
+    ticketModal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    const first = ticketModal.querySelector(focusableSelector);
+    if (first) first.focus();
+  }
+
+  function closeTicketModal() {
     ticketModal.hidden = true;
+    document.body.style.overflow = '';
     history.replaceState(null, "", location.pathname + location.search);
+  }
+
+  ticketModalClose.addEventListener("click", () => closeTicketModal());
+
+  // Close on outside click
+  ticketModal.addEventListener('click', (e) => {
+    if (e.target === ticketModal) closeTicketModal();
   });
 
-  // Close on Escape
+  // Close on Escape and trap focus
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && !ticketModal.hidden) {
-      ticketModal.hidden = true;
-      history.replaceState(null, "", location.pathname + location.search);
+      closeTicketModal();
+      return;
+    }
+
+    if (e.key === 'Tab' && !ticketModal.hidden) {
+      const focusable = Array.from(ticketModal.querySelectorAll(focusableSelector)).filter((el) => el.offsetParent !== null);
+      if (!focusable.length) return;
+      const idx = focusable.indexOf(document.activeElement);
+      if (e.shiftKey) {
+        if (idx === 0) {
+          focusable[focusable.length - 1].focus();
+          e.preventDefault();
+        }
+      } else {
+        if (idx === focusable.length - 1) {
+          focusable[0].focus();
+          e.preventDefault();
+        }
+      }
     }
   });
 
-  // Allow links to open the ticket modal via anchor
-  document.querySelectorAll('a[href$="#ticketing"]').forEach((link) => {
+  // Allow links to open the ticket modal via anchor or button
+  document.querySelectorAll('a[href$="#ticketing"], a[href="#ticketing"]').forEach((link) => {
     link.addEventListener("click", (e) => {
       e.preventDefault();
-      ticketModal.hidden = false;
-      ticketModal.querySelector("input, textarea, select").focus();
+      openTicketModal();
     });
   });
+
+  // If loaded with hash, open modal
+  if (window.location.hash === "#ticketing") {
+    openTicketModal();
+  }
 }
