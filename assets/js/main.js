@@ -315,6 +315,11 @@ const ticketModal = document.getElementById("ticketModal");
 const ticketModalClose = document.getElementById("ticketModalClose");
 const ticketModalForm = document.getElementById("ticketModalForm");
 const ticketModalFeedback = document.getElementById("ticketModalFeedback");
+const ticketSubmittedSection = document.getElementById("ticketSubmittedSection");
+const ticketModalRefDisplay = document.getElementById("ticketModalRefDisplay");
+const copyTicketRefBtn = document.getElementById("copyTicketRefBtn");
+const ticketModalDoneBtn = document.getElementById("ticketModalDoneBtn");
+const ticketModalCopyFeedback = document.getElementById("ticketModalCopyFeedback");
 
 let _lastFocusedEl = null;
 
@@ -374,8 +379,16 @@ const closeTicketModal = () => {
   ticketModal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
   document.removeEventListener("keydown", handleModalKeyDown);
-  if (ticketModalForm) ticketModalForm.reset();
+  // reset and re-enable form
+  if (ticketModalForm) {
+    // enable any disabled inputs/buttons
+    ticketModalForm.querySelectorAll("input, select, textarea, button").forEach((el) => (el.disabled = false));
+    ticketModalForm.reset();
+  }
   if (ticketModalFeedback) ticketModalFeedback.textContent = "";
+  if (ticketSubmittedSection) ticketSubmittedSection.hidden = true;
+  if (ticketModalRefDisplay) ticketModalRefDisplay.textContent = "-";
+  if (ticketModalCopyFeedback) ticketModalCopyFeedback.textContent = "";
   try {
     if (_lastFocusedEl && typeof _lastFocusedEl.focus === "function") _lastFocusedEl.focus();
   } catch (err) {
@@ -428,15 +441,45 @@ if (ticketModalForm) {
 
     const all = [ticket, ...tickets];
     saveTickets(all);
+    // Show submitted section with reference and keep modal open so client can copy
+    if (ticketModalFeedback) ticketModalFeedback.textContent = "";
+    if (ticketModalRefDisplay) ticketModalRefDisplay.textContent = reference;
+    if (ticketSubmittedSection) ticketSubmittedSection.hidden = false;
 
-    if (ticketModalFeedback) ticketModalFeedback.textContent = `Issue submitted successfully. Your reference number is ${reference}.`;
-
-    // Update any visible ticket board (if present)
-    if (typeof renderTickets === "function") {
-      renderTickets(all);
+    // disable form inputs to prevent duplicate submissions while keeping reference visible
+    if (ticketModalForm) {
+      ticketModalForm.querySelectorAll("input, select, textarea, button").forEach((el) => (el.disabled = true));
     }
 
-    setTimeout(() => closeTicketModal(), 900);
+    // Update any visible ticket board (if present)
+    if (typeof renderTickets === "function") renderTickets(all);
+
+    // wire copy and done buttons (assign to avoid duplicate listeners)
+    if (copyTicketRefBtn) {
+      copyTicketRefBtn.onclick = async () => {
+        try {
+          if (navigator.clipboard && reference) {
+            await navigator.clipboard.writeText(reference);
+            if (ticketModalCopyFeedback) ticketModalCopyFeedback.textContent = "Reference copied to clipboard.";
+            copyTicketRefBtn.textContent = "Copied";
+            setTimeout(() => (copyTicketRefBtn.textContent = "Copy"), 1500);
+          } else {
+            // fallback: select the code element and prompt
+            if (ticketModalRefDisplay) {
+              const range = document.createRange();
+              range.selectNodeContents(ticketModalRefDisplay);
+              const sel = window.getSelection();
+              sel.removeAllRanges();
+              sel.addRange(range);
+            }
+          }
+        } catch (err) {
+          if (ticketModalCopyFeedback) ticketModalCopyFeedback.textContent = "Unable to copy automatically. Select and copy manually.";
+        }
+      };
+    }
+
+    if (ticketModalDoneBtn) ticketModalDoneBtn.onclick = () => closeTicketModal();
   });
 }
 

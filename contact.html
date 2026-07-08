@@ -184,6 +184,16 @@
         <button class="btn btn-primary" type="submit">Create Ticket</button>
         <p class="form-feedback" id="ticketModalFeedback" aria-live="polite"></p>
       </form>
+      <div id="ticketSubmittedSection" class="ticket-submitted" hidden>
+        <h3>Ticket Created</h3>
+        <p>Your reference number:</p>
+        <div style="display:flex;gap:0.6rem;align-items:center;">
+          <code id="ticketModalRefDisplay" style="white-space:nowrap;padding:0.4rem 0.6rem;background:#f3f3f3;border-radius:4px;">-</code>
+          <button class="btn" type="button" id="copyTicketRefBtn">Copy</button>
+          <button class="btn btn-primary" type="button" id="ticketModalDoneBtn">Done</button>
+        </div>
+        <p class="form-feedback" id="ticketModalCopyFeedback" aria-live="polite"></p>
+      </div>
     </div>
   </div>
 
