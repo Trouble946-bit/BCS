@@ -9,6 +9,15 @@ const TICKET_STORAGE_KEY = "bcs_support_tickets";
 const ticketModal = document.getElementById("ticketModal");
 const ticketModalClose = document.getElementById("ticketModalClose");
 
+// Remove any incoming '#ticketing' hash on page load so contact navigation doesn't auto-open the modal
+if (window.location.hash === "#ticketing") {
+  try {
+    history.replaceState(null, "", location.pathname + location.search);
+  } catch (e) {
+    // ignore
+  }
+}
+
 if (yearNode) {
   yearNode.textContent = new Date().getFullYear();
 }
