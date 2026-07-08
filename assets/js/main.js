@@ -320,6 +320,7 @@ const ticketModalRefDisplay = document.getElementById("ticketModalRefDisplay");
 const copyTicketRefBtn = document.getElementById("copyTicketRefBtn");
 const ticketModalDoneBtn = document.getElementById("ticketModalDoneBtn");
 const ticketModalCopyFeedback = document.getElementById("ticketModalCopyFeedback");
+let ticketReenableTimer = null;
 
 let _lastFocusedEl = null;
 
@@ -375,6 +376,10 @@ const openTicketModal = () => {
 
 const closeTicketModal = () => {
   if (!ticketModal) return;
+  if (ticketReenableTimer) {
+    clearTimeout(ticketReenableTimer);
+    ticketReenableTimer = null;
+  }
   ticketModal.hidden = true;
   ticketModal.setAttribute("aria-hidden", "true");
   document.body.style.overflow = "";
@@ -480,6 +485,28 @@ if (ticketModalForm) {
     }
 
     if (ticketModalDoneBtn) ticketModalDoneBtn.onclick = () => closeTicketModal();
+
+    // after a short delay, re-enable the form so user can submit another ticket without closing modal
+    if (ticketReenableTimer) {
+      clearTimeout(ticketReenableTimer);
+      ticketReenableTimer = null;
+    }
+    ticketReenableTimer = setTimeout(() => {
+      try {
+        if (ticketModalForm) {
+          ticketModalForm.querySelectorAll("input, select, textarea, button").forEach((el) => (el.disabled = false));
+          ticketModalForm.reset();
+          const first = ticketModalForm.querySelector("input, select, textarea");
+          if (first && typeof first.focus === "function") first.focus();
+        }
+        if (ticketSubmittedSection) ticketSubmittedSection.hidden = true;
+        if (ticketModalRefDisplay) ticketModalRefDisplay.textContent = "-";
+        if (ticketModalCopyFeedback) ticketModalCopyFeedback.textContent = "";
+      } catch (err) {
+        /* ignore */
+      }
+      ticketReenableTimer = null;
+    }, 5000);
   });
 }
 
