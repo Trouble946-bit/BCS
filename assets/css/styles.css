@@ -1090,9 +1090,15 @@ main {
 .ticket-modal {
   position: fixed;
   inset: 0;
+  /* default hidden; when the hidden attribute is removed the modal becomes visible */
   display: grid;
   place-items: center;
   z-index: 1000;
+}
+
+/* Ensure the hidden attribute actually hides the modal (author styles can override UA styles). */
+.ticket-modal[hidden] {
+  display: none !important;
 }
 
 .ticket-modal-backdrop {
