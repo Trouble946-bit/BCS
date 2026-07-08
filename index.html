@@ -39,7 +39,7 @@
       <img class="logo-image" src="assets/img/bcs-logo-full.svg" alt="BCS Digital Transformation Enabler" />
     </a>
 
-    <button class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="primaryNav">
+    <button type="button" class="menu-toggle" id="menuToggle" aria-expanded="false" aria-controls="primaryNav">
       <span></span><span></span><span></span>
       <span class="sr-only">Toggle navigation</span>
     </button>
@@ -193,29 +193,6 @@
           <button class="btn btn-primary" type="submit">Create Ticket</button>
           <p class="form-feedback" id="ticketFeedback" aria-live="polite"></p>
         </form>
-
-        <aside class="ticket-board" aria-label="Submitted contact issue reports">
-          <div class="ticket-board-head">
-            <h3>Issue Reports</h3>
-            <button class="btn btn-secondary" id="clearTickets" type="button">Clear Reports</button>
-          </div>
-          <form class="ticket-tracker" id="trackTicketForm" novalidate>
-            <label for="ticketReferenceInput">Track Your Query by Reference Number</label>
-            <div class="ticket-tracker-row">
-              <input
-                id="ticketReferenceInput"
-                name="ticketReference"
-                type="text"
-                placeholder="Example: BCS-20260701-0001"
-                autocomplete="off"
-              />
-              <button class="btn btn-secondary" type="submit">Track Query</button>
-            </div>
-            <p class="form-feedback" id="ticketTrackerFeedback" aria-live="polite"></p>
-          </form>
-          <p class="ticket-empty" id="ticketEmpty">No issue reports submitted yet.</p>
-          <div class="ticket-list" id="ticketList" aria-live="polite"></div>
-        </aside>
       </div>
     </section>
 

@@ -5,12 +5,6 @@ const yearNode = document.getElementById("year");
 const leadForms = document.querySelectorAll(".lead-form");
 const ticketForm = document.getElementById("ticketForm");
 const ticketFeedback = document.getElementById("ticketFeedback");
-const ticketList = document.getElementById("ticketList");
-const ticketEmpty = document.getElementById("ticketEmpty");
-const clearTicketsButton = document.getElementById("clearTickets");
-const trackTicketForm = document.getElementById("trackTicketForm");
-const ticketReferenceInput = document.getElementById("ticketReferenceInput");
-const ticketTrackerFeedback = document.getElementById("ticketTrackerFeedback");
 const TICKET_STORAGE_KEY = "bcs_support_tickets";
 
 if (yearNode) {
@@ -102,80 +96,8 @@ const generateTicketReference = (tickets) => {
   return `${prefix}${serial}`;
 };
 
-const createTicketMarkup = (ticket, isTracked) => {
-  const item = document.createElement("article");
-  item.className = isTracked ? "ticket-item ticket-item-tracked" : "ticket-item";
-  item.dataset.ticketId = getTicketReference(ticket);
-
-  const title = document.createElement("h4");
-  title.textContent = `${ticket.category} Issue`;
-
-  const description = document.createElement("p");
-  description.textContent = ticket.issue;
-
-  const meta = document.createElement("div");
-  meta.className = "ticket-meta";
-
-  const status = document.createElement("span");
-  status.className = ticket.status === "Resolved" ? "is-resolved" : "is-open";
-  status.textContent = ticket.status;
-
-  const reference = document.createElement("span");
-  reference.textContent = `Ref: ${getTicketReference(ticket)}`;
-
-  const priority = document.createElement("span");
-  priority.className = `priority-${ticket.priority.toLowerCase()}`;
-  priority.textContent = `${ticket.priority} Priority`;
-
-  const requester = document.createElement("span");
-  requester.textContent = ticket.requester;
-
-  const created = document.createElement("span");
-  created.textContent = new Date(ticket.createdAt).toLocaleString();
-
-  meta.append(status, reference, priority, requester, created);
-
-  const actions = document.createElement("div");
-  actions.className = "ticket-actions";
-
-  const toggleButton = document.createElement("button");
-  toggleButton.type = "button";
-  toggleButton.dataset.action = "toggle-status";
-  toggleButton.textContent = ticket.status === "Resolved" ? "Reopen" : "Mark Resolved";
-
-  const removeButton = document.createElement("button");
-  removeButton.type = "button";
-  removeButton.dataset.action = "delete-ticket";
-  removeButton.textContent = "Delete";
-
-  actions.append(toggleButton, removeButton);
-  item.append(title, description, meta, actions);
-
-  return item;
-};
-
-const renderTickets = (tickets, trackedReference = "") => {
-  if (!ticketList || !ticketEmpty) {
-    return;
-  }
-
-  ticketList.innerHTML = "";
-
-  if (!tickets.length) {
-    ticketEmpty.hidden = false;
-    return;
-  }
-
-  ticketEmpty.hidden = true;
-  tickets.forEach((ticket) => {
-    const isTracked = trackedReference !== "" && getTicketReference(ticket) === trackedReference;
-    ticketList.append(createTicketMarkup(ticket, isTracked));
-  });
-};
-
-if (ticketForm && ticketList && ticketEmpty && clearTicketsButton) {
+if (ticketForm) {
   let tickets = loadTickets();
-  renderTickets(tickets);
 
   ticketForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -206,105 +128,10 @@ if (ticketForm && ticketList && ticketEmpty && clearTicketsButton) {
 
     tickets = [ticket, ...tickets];
     saveTickets(tickets);
-    renderTickets(tickets);
     ticketForm.reset();
 
     if (ticketFeedback) {
       ticketFeedback.textContent = `Issue submitted successfully. Your reference number is ${reference}.`;
-    }
-
-    if (ticketReferenceInput) {
-      ticketReferenceInput.value = reference;
-    }
-  });
-
-  ticketList.addEventListener("click", (event) => {
-    const target = event.target;
-
-    if (!(target instanceof HTMLButtonElement)) {
-      return;
-    }
-
-    const ticketItem = target.closest(".ticket-item");
-
-    if (!ticketItem) {
-      return;
-    }
-
-    const ticketId = normalizeReference(ticketItem.dataset.ticketId);
-
-    if (!ticketId) {
-      return;
-    }
-
-    if (target.dataset.action === "toggle-status") {
-      tickets = tickets.map((ticket) => {
-        if (getTicketReference(ticket) !== ticketId) {
-          return ticket;
-        }
-
-        return {
-          ...ticket,
-          status: ticket.status === "Resolved" ? "Open" : "Resolved",
-        };
-      });
-    }
-
-    if (target.dataset.action === "delete-ticket") {
-      tickets = tickets.filter((ticket) => getTicketReference(ticket) !== ticketId);
-    }
-
-    saveTickets(tickets);
-    renderTickets(tickets);
-  });
-
-  if (trackTicketForm) {
-    trackTicketForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-
-      const queryReference = normalizeReference(ticketReferenceInput ? ticketReferenceInput.value : "");
-
-      if (!queryReference) {
-        if (ticketTrackerFeedback) {
-          ticketTrackerFeedback.textContent = "Enter a reference number to track your query.";
-        }
-        renderTickets(tickets);
-        return;
-      }
-
-      const foundTicket = tickets.find((ticket) => getTicketReference(ticket) === queryReference);
-
-      if (!foundTicket) {
-        if (ticketTrackerFeedback) {
-          ticketTrackerFeedback.textContent = `No issue found for reference ${queryReference}.`;
-        }
-        renderTickets(tickets);
-        return;
-      }
-
-      renderTickets(tickets, queryReference);
-
-      if (ticketTrackerFeedback) {
-        ticketTrackerFeedback.textContent = `Reference ${queryReference} found. Status: ${foundTicket.status}.`;
-      }
-
-      const matchedCard = Array.from(ticketList.children).find(
-        (element) => element instanceof HTMLElement && normalizeReference(element.dataset.ticketId) === queryReference
-      );
-
-      if (matchedCard instanceof HTMLElement) {
-        matchedCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
-    });
-  }
-
-  clearTicketsButton.addEventListener("click", () => {
-    tickets = [];
-    saveTickets(tickets);
-    renderTickets(tickets);
-
-    if (ticketFeedback) {
-      ticketFeedback.textContent = "All issue reports have been cleared.";
     }
   });
 }
