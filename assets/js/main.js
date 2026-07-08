@@ -101,10 +101,7 @@ const generateTicketReference = (tickets) => {
 if (ticketForm) {
   let tickets = loadTickets();
 
-  // If the page was loaded with #ticketing, open modal
-  if (window.location.hash === "#ticketing" && ticketModal) {
-    ticketModal.hidden = false;
-  }
+  // Do not auto-open modal on page load; open only when a same-page anchor is clicked
 
   ticketForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -192,16 +189,12 @@ if (ticketModal && ticketModalClose) {
     }
   });
 
-  // Allow links to open the ticket modal via anchor or button
-  document.querySelectorAll('a[href$="#ticketing"], a[href="#ticketing"]').forEach((link) => {
+  // Allow same-page anchors (href="#ticketing") to open the ticket modal
+  document.querySelectorAll('a[href="#ticketing"]').forEach((link) => {
     link.addEventListener("click", (e) => {
+      // Only intercept same-page anchors (href exactly '#ticketing')
       e.preventDefault();
       openTicketModal();
     });
   });
-
-  // If loaded with hash, open modal
-  if (window.location.hash === "#ticketing") {
-    openTicketModal();
-  }
 }
