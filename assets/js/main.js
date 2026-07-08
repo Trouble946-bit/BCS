@@ -18,6 +18,50 @@ if (window.location.hash === "#ticketing") {
   }
 }
 
+// Extra safety: ensure modal open/close wiring after DOM is fully ready
+document.addEventListener('DOMContentLoaded', () => {
+  try {
+    if (window.location.hash === '#ticketing') {
+      history.replaceState(null, '', location.pathname + location.search);
+    }
+  } catch (e) {
+    // ignore
+  }
+
+  const modal = document.getElementById('ticketModal');
+  const close = document.getElementById('ticketModalClose');
+
+  if (modal) modal.hidden = true;
+
+  const openModal = () => {
+    if (!modal) return;
+    modal.hidden = false;
+    document.body.style.overflow = 'hidden';
+    const first = modal.querySelector('input, textarea, select, button');
+    if (first instanceof HTMLElement) first.focus();
+  };
+
+  const closeModal = () => {
+    if (!modal) return;
+    modal.hidden = true;
+    document.body.style.overflow = '';
+  };
+
+  if (close) {
+    close.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeModal();
+    });
+  }
+
+  document.querySelectorAll('.create-ticket-fab, a[href="#ticketing"]').forEach((el) => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal();
+    });
+  });
+});
+
 // Ensure modal is hidden by default on load
 if (ticketModal) {
   ticketModal.hidden = true;
