@@ -1007,6 +1007,36 @@ main {
   border-color: rgba(132, 217, 255, 0.45);
 }
 
+/* Modal for ticketing */
+.ticket-modal {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(2, 6, 10, 0.6);
+  z-index: 200;
+}
+
+.ticket-modal-panel {
+  width: min(820px, 94%);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1.4rem;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  background: transparent;
+  border: 0;
+  color: var(--muted);
+  font-size: 1.4rem;
+}
+
 .ticket-meta .is-resolved {
   color: #89d4a8;
   border-color: rgba(137, 212, 168, 0.45);

@@ -6,6 +6,8 @@ const leadForms = document.querySelectorAll(".lead-form");
 const ticketForm = document.getElementById("ticketForm");
 const ticketFeedback = document.getElementById("ticketFeedback");
 const TICKET_STORAGE_KEY = "bcs_support_tickets";
+const ticketModal = document.getElementById("ticketModal");
+const ticketModalClose = document.getElementById("ticketModalClose");
 
 if (yearNode) {
   yearNode.textContent = new Date().getFullYear();
@@ -99,6 +101,11 @@ const generateTicketReference = (tickets) => {
 if (ticketForm) {
   let tickets = loadTickets();
 
+  // If the page was loaded with #ticketing, open modal
+  if (window.location.hash === "#ticketing" && ticketModal) {
+    ticketModal.hidden = false;
+  }
+
   ticketForm.addEventListener("submit", (event) => {
     event.preventDefault();
 
@@ -133,5 +140,30 @@ if (ticketForm) {
     if (ticketFeedback) {
       ticketFeedback.textContent = `Issue submitted successfully. Your reference number is ${reference}.`;
     }
+  });
+}
+
+// Modal controls
+if (ticketModal && ticketModalClose) {
+  ticketModalClose.addEventListener("click", () => {
+    ticketModal.hidden = true;
+    history.replaceState(null, "", location.pathname + location.search);
+  });
+
+  // Close on Escape
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" && !ticketModal.hidden) {
+      ticketModal.hidden = true;
+      history.replaceState(null, "", location.pathname + location.search);
+    }
+  });
+
+  // Allow links to open the ticket modal via anchor
+  document.querySelectorAll('a[href$="#ticketing"]').forEach((link) => {
+    link.addEventListener("click", (e) => {
+      e.preventDefault();
+      ticketModal.hidden = false;
+      ticketModal.querySelector("input, textarea, select").focus();
+    });
   });
 }

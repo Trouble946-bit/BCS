@@ -107,6 +107,60 @@
         <p class="form-feedback" aria-live="polite"></p>
       </form>
     </section>
+
+    <!-- Ticketing modal trigger and hidden modal markup -->
+    <section aria-hidden="true">
+      <div class="ticket-modal" id="ticketModal" hidden>
+        <div class="ticket-modal-panel" role="dialog" aria-modal="true" aria-labelledby="ticketModalTitle">
+          <button class="modal-close" id="ticketModalClose" type="button" aria-label="Close ticket form">×</button>
+          <h2 id="ticketModalTitle">Report an Issue</h2>
+          <p>Submit an incident, service request, or technical issue and receive a reference number.</p>
+          <form class="ticket-form" id="ticketForm" novalidate>
+            <div class="form-grid">
+              <label>
+                Full Name
+                <input type="text" name="requester" required />
+              </label>
+              <label>
+                Organization
+                <input type="text" name="organization" required />
+              </label>
+              <label>
+                Email Address
+                <input type="email" name="email" required />
+              </label>
+              <label>
+                Priority
+                <select name="priority" required>
+                  <option value="">Select priority</option>
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                  <option value="Critical">Critical</option>
+                </select>
+              </label>
+              <label>
+                Category
+                <select name="category" required>
+                  <option value="">Select category</option>
+                  <option value="Network">Network</option>
+                  <option value="Hardware">Hardware</option>
+                  <option value="Software">Software</option>
+                  <option value="Security">Security</option>
+                  <option value="Access">Access</option>
+                </select>
+              </label>
+            </div>
+            <label>
+              Issue Description
+              <textarea name="issue" rows="4" required placeholder="Describe the issue, impact, and location."></textarea>
+            </label>
+            <button class="btn btn-primary" type="submit">Create Ticket</button>
+            <p class="form-feedback" id="ticketFeedback" aria-live="polite"></p>
+          </form>
+        </div>
+      </div>
+    </section>
   </main>
 
   <footer class="site-footer">

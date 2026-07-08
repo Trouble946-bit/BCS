@@ -66,7 +66,7 @@
         <div class="hero-cta">
           <a class="btn btn-primary" href="contact.html">Request a Consultation</a>
           <a class="btn btn-secondary" href="services.html">View IT Services</a>
-          <a class="btn btn-secondary" href="#ticketing">Report an Issue</a>
+           <a class="btn btn-secondary" href="contact.html#ticketing">Report an Issue</a>
         </div>
       </div>
       <div class="hero-panel">
@@ -142,59 +142,7 @@
       </div>
     </section>
 
-    <section class="section reveal" id="ticketing">
-      <p class="eyebrow">Contact Us</p>
-      <h2>Contact Us and Report an Issue</h2>
-      <p>
-        Reach out to BCS Malawi directly from this page. You can report incidents, service requests, or technical
-        issues and receive an instant reference number for follow-up.
-      </p>
-      <div class="ticketing-layout">
-        <form class="ticket-form" id="ticketForm" novalidate>
-          <div class="form-grid">
-            <label>
-              Full Name
-              <input type="text" name="requester" required />
-            </label>
-            <label>
-              Organization
-              <input type="text" name="organization" required />
-            </label>
-            <label>
-              Email Address
-              <input type="email" name="email" required />
-            </label>
-            <label>
-              Priority
-              <select name="priority" required>
-                <option value="">Select priority</option>
-                <option value="Low">Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-                <option value="Critical">Critical</option>
-              </select>
-            </label>
-            <label>
-              Category
-              <select name="category" required>
-                <option value="">Select category</option>
-                <option value="Network">Network</option>
-                <option value="Hardware">Hardware</option>
-                <option value="Software">Software</option>
-                <option value="Security">Security</option>
-                <option value="Access">Access</option>
-              </select>
-            </label>
-          </div>
-          <label>
-            Issue Description
-            <textarea name="issue" rows="4" required placeholder="Describe the issue, impact, and location."></textarea>
-          </label>
-          <button class="btn btn-primary" type="submit">Create Ticket</button>
-          <p class="form-feedback" id="ticketFeedback" aria-live="polite"></p>
-        </form>
-      </div>
-    </section>
+      <!-- Ticketing moved to contact page as a modal -->
 
     <section class="section section-alt reveal banner-highlight">
       <div class="banner-overlay">
