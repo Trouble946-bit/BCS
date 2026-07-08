@@ -5,67 +5,13 @@ const yearNode = document.getElementById("year");
 const leadForms = document.querySelectorAll(".lead-form");
 const ticketForm = document.getElementById("ticketForm");
 const ticketFeedback = document.getElementById("ticketFeedback");
+const ticketList = document.getElementById("ticketList");
+const ticketEmpty = document.getElementById("ticketEmpty");
+const clearTicketsButton = document.getElementById("clearTickets");
+const trackTicketForm = document.getElementById("trackTicketForm");
+const ticketReferenceInput = document.getElementById("ticketReferenceInput");
+const ticketTrackerFeedback = document.getElementById("ticketTrackerFeedback");
 const TICKET_STORAGE_KEY = "bcs_support_tickets";
-const ticketModal = document.getElementById("ticketModal");
-const ticketModalClose = document.getElementById("ticketModalClose");
-
-// Remove any incoming '#ticketing' hash on page load so contact navigation doesn't auto-open the modal
-if (window.location.hash === "#ticketing") {
-  try {
-    history.replaceState(null, "", location.pathname + location.search);
-  } catch (e) {
-    // ignore
-  }
-}
-
-// Extra safety: ensure modal open/close wiring after DOM is fully ready
-document.addEventListener('DOMContentLoaded', () => {
-  try {
-    if (window.location.hash === '#ticketing') {
-      history.replaceState(null, '', location.pathname + location.search);
-    }
-  } catch (e) {
-    // ignore
-  }
-
-  const modal = document.getElementById('ticketModal');
-  const close = document.getElementById('ticketModalClose');
-
-  if (modal) modal.hidden = true;
-
-  const openModal = () => {
-    if (!modal) return;
-    modal.hidden = false;
-    document.body.style.overflow = 'hidden';
-    const first = modal.querySelector('input, textarea, select, button');
-    if (first instanceof HTMLElement) first.focus();
-  };
-
-  const closeModal = () => {
-    if (!modal) return;
-    modal.hidden = true;
-    document.body.style.overflow = '';
-  };
-
-  if (close) {
-    close.addEventListener('click', (e) => {
-      e.stopPropagation();
-      closeModal();
-    });
-  }
-
-  document.querySelectorAll('.create-ticket-fab, a[href="#ticketing"]').forEach((el) => {
-    el.addEventListener('click', (e) => {
-      e.preventDefault();
-      openModal();
-    });
-  });
-});
-
-// Ensure modal is hidden by default on load
-if (ticketModal) {
-  ticketModal.hidden = true;
-}
 
 if (yearNode) {
   yearNode.textContent = new Date().getFullYear();
@@ -156,10 +102,80 @@ const generateTicketReference = (tickets) => {
   return `${prefix}${serial}`;
 };
 
-if (ticketForm) {
-  let tickets = loadTickets();
+const createTicketMarkup = (ticket, isTracked) => {
+  const item = document.createElement("article");
+  item.className = isTracked ? "ticket-item ticket-item-tracked" : "ticket-item";
+  item.dataset.ticketId = getTicketReference(ticket);
 
-  // Do not auto-open modal on page load; open only when a same-page anchor is clicked
+  const title = document.createElement("h4");
+  title.textContent = `${ticket.category} Issue`;
+
+  const description = document.createElement("p");
+  description.textContent = ticket.issue;
+
+  const meta = document.createElement("div");
+  meta.className = "ticket-meta";
+
+  const status = document.createElement("span");
+  status.className = ticket.status === "Resolved" ? "is-resolved" : "is-open";
+  status.textContent = ticket.status;
+
+  const reference = document.createElement("span");
+  reference.textContent = `Ref: ${getTicketReference(ticket)}`;
+
+  const priority = document.createElement("span");
+  priority.className = `priority-${ticket.priority.toLowerCase()}`;
+  priority.textContent = `${ticket.priority} Priority`;
+
+  const requester = document.createElement("span");
+  requester.textContent = ticket.requester;
+
+  const created = document.createElement("span");
+  created.textContent = new Date(ticket.createdAt).toLocaleString();
+
+  meta.append(status, reference, priority, requester, created);
+
+  const actions = document.createElement("div");
+  actions.className = "ticket-actions";
+
+  const toggleButton = document.createElement("button");
+  toggleButton.type = "button";
+  toggleButton.dataset.action = "toggle-status";
+  toggleButton.textContent = ticket.status === "Resolved" ? "Reopen" : "Mark Resolved";
+
+  const removeButton = document.createElement("button");
+  removeButton.type = "button";
+  removeButton.dataset.action = "delete-ticket";
+  removeButton.textContent = "Delete";
+
+  actions.append(toggleButton, removeButton);
+  item.append(title, description, meta, actions);
+
+  return item;
+};
+
+const renderTickets = (tickets, trackedReference = "") => {
+  if (!ticketList || !ticketEmpty) {
+    return;
+  }
+
+  ticketList.innerHTML = "";
+
+  if (!tickets.length) {
+    ticketEmpty.hidden = false;
+    return;
+  }
+
+  ticketEmpty.hidden = true;
+  tickets.forEach((ticket) => {
+    const isTracked = trackedReference !== "" && getTicketReference(ticket) === trackedReference;
+    ticketList.append(createTicketMarkup(ticket, isTracked));
+  });
+};
+
+if (ticketForm && ticketList && ticketEmpty && clearTicketsButton) {
+  let tickets = loadTickets();
+  renderTickets(tickets);
 
   ticketForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -190,78 +206,105 @@ if (ticketForm) {
 
     tickets = [ticket, ...tickets];
     saveTickets(tickets);
+    renderTickets(tickets);
     ticketForm.reset();
 
     if (ticketFeedback) {
       ticketFeedback.textContent = `Issue submitted successfully. Your reference number is ${reference}.`;
     }
-  });
-}
 
-// Modal controls with basic focus trap
-if (ticketModal && ticketModalClose) {
-  const focusableSelector = 'a[href], area[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), button:not([disabled]), [tabindex]:not([tabindex="-1"])';
-
-  function openTicketModal() {
-    ticketModal.hidden = false;
-    document.body.style.overflow = 'hidden';
-    const first = ticketModal.querySelector(focusableSelector);
-    if (first) first.focus();
-  }
-
-  function closeTicketModal() {
-    ticketModal.hidden = true;
-    document.body.style.overflow = '';
-    history.replaceState(null, "", location.pathname + location.search);
-  }
-
-  ticketModalClose.addEventListener("click", () => closeTicketModal());
-
-  // Close on outside click
-  ticketModal.addEventListener('click', (e) => {
-    if (e.target === ticketModal) closeTicketModal();
-  });
-
-  // Delegate any .modal-close clicks (in case markup changes)
-  document.addEventListener('click', (e) => {
-    const target = e.target;
-    if (!(target instanceof HTMLElement)) return;
-    if (target.matches('.modal-close') || target.closest('.modal-close')) {
-      if (!ticketModal.hidden) closeTicketModal();
+    if (ticketReferenceInput) {
+      ticketReferenceInput.value = reference;
     }
   });
 
-  // Close on Escape and trap focus
-  document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" && !ticketModal.hidden) {
-      closeTicketModal();
+  ticketList.addEventListener("click", (event) => {
+    const target = event.target;
+
+    if (!(target instanceof HTMLButtonElement)) {
       return;
     }
 
-    if (e.key === 'Tab' && !ticketModal.hidden) {
-      const focusable = Array.from(ticketModal.querySelectorAll(focusableSelector)).filter((el) => el.offsetParent !== null);
-      if (!focusable.length) return;
-      const idx = focusable.indexOf(document.activeElement);
-      if (e.shiftKey) {
-        if (idx === 0) {
-          focusable[focusable.length - 1].focus();
-          e.preventDefault();
-        }
-      } else {
-        if (idx === focusable.length - 1) {
-          focusable[0].focus();
-          e.preventDefault();
-        }
-      }
+    const ticketItem = target.closest(".ticket-item");
+
+    if (!ticketItem) {
+      return;
     }
+
+    const ticketId = normalizeReference(ticketItem.dataset.ticketId);
+
+    if (!ticketId) {
+      return;
+    }
+
+    if (target.dataset.action === "toggle-status") {
+      tickets = tickets.map((ticket) => {
+        if (getTicketReference(ticket) !== ticketId) {
+          return ticket;
+        }
+
+        return {
+          ...ticket,
+          status: ticket.status === "Resolved" ? "Open" : "Resolved",
+        };
+      });
+    }
+
+    if (target.dataset.action === "delete-ticket") {
+      tickets = tickets.filter((ticket) => getTicketReference(ticket) !== ticketId);
+    }
+
+    saveTickets(tickets);
+    renderTickets(tickets);
   });
 
-  // Allow same-page anchors (href="#ticketing") to open the ticket modal
-  document.querySelectorAll('a[href="#ticketing"]').forEach((link) => {
-    link.addEventListener("click", (e) => {
-      // Only intercept same-page anchors (href exactly '#ticketing')
-      e.preventDefault();
-      openTicketModal();
+  if (trackTicketForm) {
+    trackTicketForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const queryReference = normalizeReference(ticketReferenceInput ? ticketReferenceInput.value : "");
+
+      if (!queryReference) {
+        if (ticketTrackerFeedback) {
+          ticketTrackerFeedback.textContent = "Enter a reference number to track your query.";
+        }
+        renderTickets(tickets);
+        return;
+      }
+
+      const foundTicket = tickets.find((ticket) => getTicketReference(ticket) === queryReference);
+
+      if (!foundTicket) {
+        if (ticketTrackerFeedback) {
+          ticketTrackerFeedback.textContent = `No issue found for reference ${queryReference}.`;
+        }
+        renderTickets(tickets);
+        return;
+      }
+
+      renderTickets(tickets, queryReference);
+
+      if (ticketTrackerFeedback) {
+        ticketTrackerFeedback.textContent = `Reference ${queryReference} found. Status: ${foundTicket.status}.`;
+      }
+
+      const matchedCard = Array.from(ticketList.children).find(
+        (element) => element instanceof HTMLElement && normalizeReference(element.dataset.ticketId) === queryReference
+      );
+
+      if (matchedCard instanceof HTMLElement) {
+        matchedCard.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
     });
+  }
+
+  clearTicketsButton.addEventListener("click", () => {
+    tickets = [];
+    saveTickets(tickets);
+    renderTickets(tickets);
+
+    if (ticketFeedback) {
+      ticketFeedback.textContent = "All issue reports have been cleared.";
+    }
   });
 }

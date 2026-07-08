@@ -895,36 +895,116 @@ main {
   max-width: 70ch;
 }
 
-/* Ticket list and tracker UI removed (now using contact modal) */
-
-/* Modal for ticketing */
-.ticket-modal {
-  position: fixed;
-  inset: 0;
+.ticketing-layout {
+  margin-top: 1.25rem;
   display: grid;
-  place-items: center;
-  background: rgba(2, 6, 10, 0.6);
-  z-index: 200;
+  gap: 1rem;
 }
 
-.ticket-modal-panel {
-  width: min(820px, 94%);
+.ticket-board {
   background: var(--surface);
   border: 1px solid var(--line);
-  border-radius: 12px;
-  padding: 1.4rem;
+  border-radius: 1rem;
+  padding: 1rem;
   box-shadow: var(--shadow);
-  position: relative;
 }
 
-.modal-close {
-  position: absolute;
-  right: 1rem;
-  top: 1rem;
-  background: transparent;
-  border: 0;
+.ticket-board-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.9rem;
+}
+
+.ticket-board-head h3 {
+  margin: 0;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  color: var(--brand);
+}
+
+.ticket-empty {
   color: var(--muted);
-  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.ticket-tracker {
+  margin-bottom: 0.9rem;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.ticket-tracker label {
+  font-weight: 700;
+}
+
+.ticket-tracker-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+
+.ticket-tracker input {
+  flex: 1 1 220px;
+  width: 100%;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.58rem 0.75rem;
+  color: var(--text);
+  font: inherit;
+}
+
+.ticket-tracker input:focus {
+  outline: 2px solid color-mix(in srgb, var(--brand) 60%, #ffffff 40%);
+  outline-offset: 1px;
+}
+
+.ticket-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.ticket-item {
+  border: 1px solid var(--line);
+  border-radius: 0.9rem;
+  background: color-mix(in srgb, var(--surface-alt) 80%, #ffffff 20%);
+  padding: 0.85rem;
+}
+
+.ticket-item-tracked {
+  border-color: rgba(110, 197, 255, 0.82);
+  box-shadow: 0 0 0 2px rgba(110, 197, 255, 0.24);
+}
+
+.ticket-item h4 {
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  margin: 0 0 0.35rem;
+}
+
+.ticket-item p {
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.ticket-meta,
+.ticket-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.ticket-meta span {
+  font-size: 0.76rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 0.2rem 0.52rem;
+}
+
+.ticket-meta .is-open {
+  color: #84d9ff;
+  border-color: rgba(132, 217, 255, 0.45);
 }
 
 .ticket-meta .is-resolved {
@@ -994,24 +1074,6 @@ main {
 }
 
 .whatsapp-fab:hover {
-  transform: translateY(-2px);
-}
-
-.create-ticket-fab {
-  position: fixed;
-  right: 1rem;
-  bottom: 4.6rem;
-  z-index: 45;
-  background: var(--brand);
-  color: #ffffff;
-  text-decoration: none;
-  border-radius: 999px;
-  padding: 0.72rem 1rem;
-  font-weight: 700;
-  box-shadow: 0 10px 20px rgba(50, 169, 255, 0.18);
-}
-
-.create-ticket-fab:hover {
   transform: translateY(-2px);
 }
 
