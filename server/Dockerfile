@@ -11,4 +11,5 @@ COPY . ./
 
 EXPOSE 3000
 
-CMD ["npm", "start"]
+# Wait for Postgres to be ready before starting the app
+CMD ["node", "wait-for-db.js"]

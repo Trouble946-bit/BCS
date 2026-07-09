@@ -29,3 +29,7 @@ APIs
   - GET `/api/tickets/:ref` — staff view ticket
   - POST `/api/tickets/:ref/updates` — add an update
   - PUT `/api/tickets/:ref/status` — toggle status
+
+  Docker note
+
+  The Docker image runs a small Node-based wait script (`wait-for-db.js`) that polls Postgres until it accepts connections before starting the API. You can tune `DB_RETRY_MS` and `DB_MAX_ATTEMPTS` via environment variables.
