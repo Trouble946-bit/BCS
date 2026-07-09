@@ -19,6 +19,22 @@ npm install
 npm start
 ```
 
+Helpers
+
+- Run migrations from Node (uses `server/sql/init.sql`):
+
+```bash
+cd server
+npm run migrate
+```
+
+- Create a staff user (requires `REGISTER_SECRET` to match `.env`):
+
+```bash
+cd server
+REGISTER_SECRET=yoursecret ADMIN_USERNAME=admin ADMIN_PASSWORD=pass npm run create-admin
+```
+
 APIs
 
 - POST `/api/tickets` — create a ticket (public). Returns `{ reference }`.
