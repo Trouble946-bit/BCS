@@ -399,6 +399,25 @@ main {
   transition: opacity 320ms ease;
 }
 
+/* Ticket modal submitted reference display */
+.ticket-submitted .ref-display,
+.ref-display {
+  display: inline-block;
+  padding: 0.45rem 0.8rem;
+  background: var(--surface-alt);
+  color: var(--brand-strong);
+  border-radius: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Space Grotesk', monospace;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+  border: 1px solid rgba(255,255,255,0.04);
+  min-width: 20ch;
+}
+
+.ticket-submitted .ref-display::selection {
+  background: rgba(110,197,255,0.35);
+}
+
 .interactive-stat:hover,
 .interactive-stat:focus-within {
   transform: translateY(-4px);
